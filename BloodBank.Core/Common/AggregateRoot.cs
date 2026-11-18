@@ -1,4 +1,4 @@
-﻿namespace BloodBank.Domain.Events;
+﻿namespace BloodBank.Domain.Common;
 
 public abstract class AggregateRoot
 {
