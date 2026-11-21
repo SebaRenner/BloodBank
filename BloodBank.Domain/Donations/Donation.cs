@@ -11,15 +11,17 @@ public class Donation : AggregateRoot
 
     public DonationStatus Status { get; private set; }
 
+    public Volume Volume { get; private set; } = null!;
+
     public BloodGroup? BloodGroup { get; private set; }
 
-    private Donation() {}
+    private Donation() { }
 
-    public static Donation Register(Guid donorId, DateTimeOffset collectedAt)
+    public static Donation Register(Guid donorId, DateTimeOffset collectedAt, Volume volume)
     {
         var donation = new Donation();
 
-        donation.AddEvent(new DonationRegistered(Guid.NewGuid(), donorId, collectedAt));
+        donation.AddEvent(new DonationRegistered(Guid.NewGuid(), donorId, collectedAt, volume));
 
         return donation;
     }
@@ -74,6 +76,7 @@ public class Donation : AggregateRoot
         Id = e.DonationId;
         DonorId = e.DonorId;
         CollectedAt = e.CollectedAt;
+        Volume = e.Volume;
         Status = DonationStatus.Registered;
     }
 

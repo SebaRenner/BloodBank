@@ -2,4 +2,4 @@
 
 namespace BloodBank.Domain.Donations.Events;
 
-public record DonationRegistered(Guid DonationId, Guid DonorId, DateTimeOffset CollectedAt) : DomainEvent(DonationId);
+public record DonationRegistered(Guid DonationId, Guid DonorId, DateTimeOffset CollectedAt, Volume Volume) : DomainEvent(DonationId);

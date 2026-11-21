@@ -12,13 +12,15 @@ public class DonationTest
         // Arrange
         var donorId = Guid.NewGuid();
         var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
+        var volume = new Volume(450);
 
         // Act
-        var donation = Donation.Register(donorId, collectedAt);
+        var donation = Donation.Register(donorId, collectedAt, volume);
 
         // Assert
         Assert.Equal(donorId, donation.DonorId);
         Assert.Equal(collectedAt, donation.CollectedAt);
+        Assert.Equal(volume, donation.Volume);
         Assert.Equal(DonationStatus.Registered, donation.Status);
         Assert.Single(donation.Events);
         Assert.IsType<DonationRegistered>(donation.Events.First());
@@ -152,6 +154,7 @@ public class DonationTest
     {
         var donorId = Guid.NewGuid();
         var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
-        return Donation.Register(donorId, collectedAt);
+        var volume = new Volume(450);
+        return Donation.Register(donorId, collectedAt, volume);
     }
 }
