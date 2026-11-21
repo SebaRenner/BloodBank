@@ -11,6 +11,8 @@ public class Donation : AggregateRoot
 
     public DonationStatus Status { get; private set; }
 
+    public BloodGroup? BloodGroup { get; private set; }
+
     private Donation() {}
 
     public static Donation Register(Guid donorId, DateTimeOffset collectedAt)
@@ -30,12 +32,12 @@ public class Donation : AggregateRoot
         AddEvent(new DonationSentForTesting(Id));
     }
 
-    public void TestPassed()
+    public void TestPassed(BloodGroup bloodGroup)
     {
         if (Status != DonationStatus.SentForTesting)
             throw new InvalidOperationException($"Donation: {Id} must be marked as sent for testing, but is {Status}.");
 
-        AddEvent(new DonationTestPassed(Id));
+        AddEvent(new DonationTestPassed(Id, bloodGroup));
     }
 
     public void TestFailed(string reason)
@@ -80,9 +82,10 @@ public class Donation : AggregateRoot
         Status = DonationStatus.SentForTesting;
     }
 
-    private void On(DonationTestPassed _)
+    private void On(DonationTestPassed e)
     {
         Status = DonationStatus.TestPassed;
+        BloodGroup = e.BloodGroup;
     }
 
     private void On(DonationTestFailed _)

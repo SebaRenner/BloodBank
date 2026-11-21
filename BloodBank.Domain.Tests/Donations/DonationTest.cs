@@ -1,4 +1,5 @@
-﻿using BloodBank.Domain.Donations;
+﻿using BloodBank.Domain.Common;
+using BloodBank.Domain.Donations;
 using BloodBank.Domain.Donations.Events;
 
 namespace BloodBank.Domain.Tests.Donations;
@@ -57,26 +58,29 @@ public class DonationTest
     public void Test_Donation_TestPassed()
     {
         // Arrange
+        var bloodGroup = BloodGroup.OPositive;
         var donation = CreateDonation();
         donation.SendForTesting();
 
         // Act
-        donation.TestPassed();
+        donation.TestPassed(bloodGroup);
 
         // Assert
         Assert.Equal(DonationStatus.TestPassed, donation.Status);
         Assert.Equal(3, donation.Events.Count);
         Assert.IsType<DonationTestPassed>(donation.Events.Last());
+        Assert.Equal(bloodGroup, donation.BloodGroup);
     }
 
     [Fact]
     public void Test_Donation_TestPassed_NotSentForTesting()
     {
         // Arrange
+        var bloodGroup = BloodGroup.OPositive;
         var donation = CreateDonation();
 
         // Act
-        var act = () => donation.TestPassed();
+        var act = () => donation.TestPassed(bloodGroup);
 
         // Assert
         Assert.Throws<InvalidOperationException>(act);
@@ -144,7 +148,7 @@ public class DonationTest
         Assert.Equal(2, donation.Events.Count);
     }
 
-    private Donation CreateDonation()
+    private static Donation CreateDonation()
     {
         var donorId = Guid.NewGuid();
         var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);

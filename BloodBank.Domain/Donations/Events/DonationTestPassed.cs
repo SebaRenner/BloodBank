@@ -2,4 +2,4 @@
 
 namespace BloodBank.Domain.Donations.Events;
 
-public record DonationTestPassed(Guid DonationId) : DomainEvent(DonationId);
+public record DonationTestPassed(Guid DonationId, BloodGroup BloodGroup) : DomainEvent(DonationId);
