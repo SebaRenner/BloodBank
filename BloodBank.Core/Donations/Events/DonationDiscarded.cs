@@ -2,6 +2,4 @@
 
 namespace BloodBank.Domain.Donations.Events;
 
-public record DonationDiscarded : DomainEvent
-{
-}
+public record DonationDiscarded(Guid DonationId) : DomainEvent(DonationId);
