@@ -27,9 +27,7 @@ public class DonationTest
     public void Test_Donation_SendForTesting()
     {
         // Arrange
-        var donorId = Guid.NewGuid();
-        var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
-        var donation = Donation.Register(donorId, collectedAt);
+        var donation = CreateDonation();
 
         // Act
         donation.SendForTesting();
@@ -44,9 +42,7 @@ public class DonationTest
     public void Test_Donation_SendForTesting_AlreadySent()
     {
         // Arrange
-        var donorId = Guid.NewGuid();
-        var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
-        var donation = Donation.Register(donorId, collectedAt);
+        var donation = CreateDonation();
         donation.SendForTesting();
 
         // Act
@@ -58,12 +54,71 @@ public class DonationTest
     }
 
     [Fact]
+    public void Test_Donation_TestPassed()
+    {
+        // Arrange
+        var donation = CreateDonation();
+        donation.SendForTesting();
+
+        // Act
+        donation.TestPassed();
+
+        // Assert
+        Assert.Equal(DonationStatus.TestPassed, donation.Status);
+        Assert.Equal(3, donation.Events.Count);
+        Assert.IsType<DonationTestPassed>(donation.Events.Last());
+    }
+
+    [Fact]
+    public void Test_Donation_TestPassed_NotSentForTesting()
+    {
+        // Arrange
+        var donation = CreateDonation();
+
+        // Act
+        var act = () => donation.TestPassed();
+
+        // Assert
+        Assert.Throws<InvalidOperationException>(act);
+        Assert.Single(donation.Events);
+    }
+
+    [Fact]
+    public void Test_Donation_TestFailed()
+    {
+        // Arrange
+        var donation = CreateDonation();
+        donation.SendForTesting();
+
+        // Act
+        donation.TestFailed("HIV reactive");
+
+        // Assert
+        Assert.Equal(DonationStatus.TestFailed, donation.Status);
+        Assert.Equal(3, donation.Events.Count);
+        var failed = Assert.IsType<DonationTestFailed>(donation.Events.Last());
+        Assert.Equal("HIV reactive", failed.Reason);
+    }
+
+    [Fact]
+    public void Test_Donation_TestFailed_NotSentForTesting()
+    {
+        // Arrange
+        var donation = CreateDonation();
+
+        // Act
+        var act = () => donation.TestFailed("HIV reactive");
+
+        // Assert
+        Assert.Throws<InvalidOperationException>(act);
+        Assert.Single(donation.Events);
+    }
+
+    [Fact]
     public void Test_Donation_Discard()
     {
         // Arrange
-        var donorId = Guid.NewGuid();
-        var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
-        var donation = Donation.Register(donorId, collectedAt);
+        var donation = CreateDonation();
 
         // Act
         donation.Discard();
@@ -78,9 +133,7 @@ public class DonationTest
     public void Test_Donation_Discard_AlreadyDiscarded()
     {
         // Arrange
-        var donorId = Guid.NewGuid();
-        var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
-        var donation = Donation.Register(donorId, collectedAt);
+        var donation = CreateDonation();
         donation.Discard();
 
         // Act
@@ -89,5 +142,12 @@ public class DonationTest
         // Assert
         Assert.Throws<InvalidOperationException>(act);
         Assert.Equal(2, donation.Events.Count);
+    }
+
+    private Donation CreateDonation()
+    {
+        var donorId = Guid.NewGuid();
+        var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
+        return Donation.Register(donorId, collectedAt);
     }
 }

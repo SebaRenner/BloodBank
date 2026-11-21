@@ -25,15 +25,31 @@ public class Donation : AggregateRoot
     public void SendForTesting()
     {
         if (Status != DonationStatus.Registered)
-            throw new InvalidOperationException($"Donation must be registered to be sent for testing, but is {Status}.");
+            throw new InvalidOperationException($"Donation: {Id} must be registered to be sent for testing, but is {Status}.");
 
         AddEvent(new DonationSentForTesting(Id));
+    }
+
+    public void TestPassed()
+    {
+        if (Status != DonationStatus.SentForTesting)
+            throw new InvalidOperationException($"Donation: {Id} must be marked as sent for testing, but is {Status}.");
+
+        AddEvent(new DonationTestPassed(Id));
+    }
+
+    public void TestFailed(string reason)
+    {
+        if (Status != DonationStatus.SentForTesting)
+            throw new InvalidOperationException($"Donation: {Id} must be marked as sent for testing, but is {Status}.");
+
+        AddEvent(new DonationTestFailed(Id, reason));
     }
 
     public void Discard()
     {
         if (Status == DonationStatus.Discarded || Status == DonationStatus.Split)
-            throw new InvalidOperationException("Donation cannot be discarded if already discarded or split.");
+            throw new InvalidOperationException($"Donation: {Id} cannot be discarded if already discarded or split.");
 
         AddEvent(new DonationDiscarded(Id));
     }
@@ -44,6 +60,8 @@ public class Donation : AggregateRoot
         {
             case DonationRegistered e: On(e); break;
             case DonationSentForTesting e: On(e); break;
+            case DonationTestPassed e: On(e); break;
+            case DonationTestFailed e: On(e); break;
             case DonationDiscarded e: On(e); break;
             default: throw new InvalidOperationException($"Unhandled event {domainEvent.GetType().Name}");
         }
@@ -60,7 +78,17 @@ public class Donation : AggregateRoot
     private void On(DonationSentForTesting _)
     {
         Status = DonationStatus.SentForTesting;
-    }   
+    }
+
+    private void On(DonationTestPassed _)
+    {
+        Status = DonationStatus.TestPassed;
+    }
+
+    private void On(DonationTestFailed _)
+    {
+        Status = DonationStatus.TestFailed;
+    }
 
     private void On(DonationDiscarded _)
     {
