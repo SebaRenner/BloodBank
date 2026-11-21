@@ -3,6 +3,7 @@
 public enum DonationStatus
 {
     Registered,
+    SentForTesting,
     TestPassed,
     TestFailed,
     Split,

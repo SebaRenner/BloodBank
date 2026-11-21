@@ -24,6 +24,40 @@ public class DonationTest
     }
 
     [Fact]
+    public void Test_Donation_SendForTesting()
+    {
+        // Arrange
+        var donorId = Guid.NewGuid();
+        var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
+        var donation = Donation.Register(donorId, collectedAt);
+
+        // Act
+        donation.SendForTesting();
+
+        // Assert
+        Assert.Equal(DonationStatus.SentForTesting, donation.Status);
+        Assert.Equal(2, donation.Events.Count);
+        Assert.IsType<DonationSentForTesting>(donation.Events.Last());
+    }
+
+    [Fact]
+    public void Test_Donation_SendForTesting_AlreadySent()
+    {
+        // Arrange
+        var donorId = Guid.NewGuid();
+        var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
+        var donation = Donation.Register(donorId, collectedAt);
+        donation.SendForTesting();
+
+        // Act
+        var act = () => donation.SendForTesting();
+
+        // Assert
+        Assert.Throws<InvalidOperationException>(act);
+        Assert.Equal(2, donation.Events.Count);
+    }
+
+    [Fact]
     public void Test_Donation_Discard()
     {
         // Arrange
@@ -54,5 +88,6 @@ public class DonationTest
 
         // Assert
         Assert.Throws<InvalidOperationException>(act);
+        Assert.Equal(2, donation.Events.Count);
     }
 }

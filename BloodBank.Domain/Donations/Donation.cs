@@ -22,24 +22,18 @@ public class Donation : AggregateRoot
         return donation;
     }
 
-    public void Test()
+    public void SendForTesting()
     {
         if (Status != DonationStatus.Registered)
-        {
-            throw new InvalidOperationException("Donation must be in 'Registered' status to be tested.");
-        }
+            throw new InvalidOperationException($"Donation must be registered to be sent for testing, but is {Status}.");
 
-        // Test logic here or in domain service?!
-
-        // Add event pass/fail test
+        AddEvent(new DonationSentForTesting(Id));
     }
 
     public void Discard()
     {
         if (Status == DonationStatus.Discarded || Status == DonationStatus.Split)
-        {
             throw new InvalidOperationException("Donation cannot be discarded if already discarded or split.");
-        }
 
         AddEvent(new DonationDiscarded(Id));
     }
@@ -49,6 +43,7 @@ public class Donation : AggregateRoot
         switch (domainEvent)
         {
             case DonationRegistered e: On(e); break;
+            case DonationSentForTesting e: On(e); break;
             case DonationDiscarded e: On(e); break;
             default: throw new InvalidOperationException($"Unhandled event {domainEvent.GetType().Name}");
         }
@@ -61,6 +56,11 @@ public class Donation : AggregateRoot
         CollectedAt = e.CollectedAt;
         Status = DonationStatus.Registered;
     }
+
+    private void On(DonationSentForTesting _)
+    {
+        Status = DonationStatus.SentForTesting;
+    }   
 
     private void On(DonationDiscarded _)
     {
