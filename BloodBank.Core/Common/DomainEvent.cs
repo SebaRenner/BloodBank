@@ -1,8 +1,8 @@
 ﻿namespace BloodBank.Domain.Common;
 
-public abstract record DomainEvent
+public abstract record DomainEvent(Guid AggregateId)
 {
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid EventId { get; } = Guid.NewGuid();
 
     public DateTimeOffset OccurredAt { get; } = DateTimeOffset.UtcNow;
 }
