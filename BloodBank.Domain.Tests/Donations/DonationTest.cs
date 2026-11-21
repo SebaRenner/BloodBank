@@ -39,4 +39,20 @@ public class DonationTest
         Assert.Equal(2, donation.Events.Count);
         Assert.IsType<DonationDiscarded>(donation.Events.Last());
     }
+
+    [Fact]
+    public void Test_Donation_Discard_AlreadyDiscarded()
+    {
+        // Arrange
+        var donorId = Guid.NewGuid();
+        var collectedAt = new DateTimeOffset(2026, 11, 21, 12, 0, 0, TimeSpan.Zero);
+        var donation = Donation.Register(donorId, collectedAt);
+        donation.Discard();
+
+        // Act
+        var act = () => donation.Discard();
+
+        // Assert
+        Assert.Throws<InvalidOperationException>(act);
+    }
 }

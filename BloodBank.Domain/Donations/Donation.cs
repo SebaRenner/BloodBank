@@ -36,7 +36,10 @@ public class Donation : AggregateRoot
 
     public void Discard()
     {
-        // TODO: Ensure correct previous state
+        if (Status == DonationStatus.Discarded || Status == DonationStatus.Split)
+        {
+            throw new InvalidOperationException("Donation cannot be discarded if already discarded or split.");
+        }
 
         AddEvent(new DonationDiscarded(Id));
     }
