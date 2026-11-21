@@ -13,7 +13,7 @@ public class Donation : AggregateRoot
 
     private Donation() {}
 
-    public static Donation Register(DateTimeOffset collectedAt, Guid donorId)
+    public static Donation Register(Guid donorId, DateTimeOffset collectedAt)
     {
         var donation = new Donation();
 

@@ -2,6 +2,6 @@
 
 namespace BloodBank.Domain.Products.Events;
 
-public record ProductCreated : DomainEvent
+public record ProductCreated(Guid ProductId) : DomainEvent(ProductId)
 {
 }

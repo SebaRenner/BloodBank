@@ -2,6 +2,6 @@
 
 namespace BloodBank.Domain.Products.Events;
 
-public record ProductDiscarded : DomainEvent
+public record ProductDiscarded(Guid ProductId) : DomainEvent(ProductId)
 {
 }
