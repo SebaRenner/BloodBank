@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BloodBank.Core\BloodBank.Domain.csproj" />
+    <ProjectReference Include="..\BloodBank.Domain\BloodBank.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
