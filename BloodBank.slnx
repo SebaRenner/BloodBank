@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="BloodBank.Core/BloodBank.Domain.csproj" />
   <Project Path="BloodBank.Domain.Tests/BloodBank.Domain.Tests.csproj" Id="70e1dd79-3097-427f-901a-563d0a3c7300" />
+  <Project Path="BloodBank.Domain/BloodBank.Domain.csproj" />
 </Solution>
